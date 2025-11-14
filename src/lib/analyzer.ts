@@ -1,71 +1,73 @@
 import chatLogs from '../../src/chat_logs/fcs.txt?raw';
 
-const messageRegex = /^(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}) - (.*?): (.*)/;
-const sysMessageRegex = /Messages and calls are end-to-end encrypted|created group|added|changed the group name|changed this group's icon|left|pinned a message|You're now an admin|This message was deleted|Missed voice call|Missed video call/;
+const  msgRegex = /^(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}) - (.*?): (.*)/;
+const sysMsgRegex = /Msgs and calls are end-to-end encrypted|This message was deleted|created group|added|changed the group name|changed this group's icon|left|pinned a  msg|You're now an admin|This  msg was deleted|Missed voice call|Missed video call/;
 
-function getMessages(): { date: string, sender: string, message: string }[] {
+const dataSize = 12;
+
+function getMsgs(): { date: string, sender: string,  msg: string }[] {
   const lines = chatLogs.split('\n');
-  const messages: { date: string, sender: string, message: string }[] = [];
+  const  msgs: { date: string, sender: string,  msg: string }[] = [];
 
   for (const line of lines) {
-    const match = line.match(messageRegex);
-    if (match && !sysMessageRegex.test(line)) {
-      let cleanedMessage = match[3].replace(/<[^>]*>/g, '');
-      if (cleanedMessage.trim() === '') continue;
-      messages.push({ date: match[1], sender: match[2], message: cleanedMessage });
+    const match = line.match( msgRegex);
+    if (match && !sysMsgRegex.test(line)) {
+      let cleanedMsg = match[3].replace(/<[^>]*>/g, '');
+      if (cleanedMsg.trim() === '') continue;
+       msgs.push({ date: match[1], sender: match[2],  msg: cleanedMsg });
     }
   }
 
-  return messages;
+  return  msgs;
 }
 
 function getFirstName(sender: string): string | null {
-  if (/^\+?\d[\d\s-]{8,}\d$/.test(sender)) return null;
+  if (sender[0] == '+') return null;
   return sender.split(' ')[0];
 }
 
-export function countMessagesPerUser(): { [user: string]: number } {
-  const messages = getMessages();
-  const userMessageCounts: { [user: string]: number } = {};
+export function countMsgsPerUser(): [string, number][] {
+  const  msgs = getMsgs();
+  const userMsgCounts: { [user: string]: number } = {};
 
-  for (const { sender } of messages) {
+  for (const { sender } of  msgs) {
     const firstName = getFirstName(sender);
-    if (firstName) userMessageCounts[firstName] = (userMessageCounts[firstName] || 0) + 1;
+    if (firstName) userMsgCounts[firstName] = (userMsgCounts[firstName] || 0) + 1;
   }
 
-  return userMessageCounts;
+  return Object.entries(userMsgCounts).sort((a, b) => b[1] - a[1]).slice(0, dataSize);
 }
 
-export function countTotalMessages(): number {
-  const userMessageCounts = countMessagesPerUser();
-  return Object.values(userMessageCounts).reduce((sum, count) => sum + count, 0);
+export function countTotalMsgs(): number {
+  const userMsgCounts = countMsgsPerUser();
+  return userMsgCounts.reduce((sum, [, count]) => sum + count, 0);
 }
 
 export function getMostCommonWords(): [string, number][] {
-  const messages = getMessages();
+  const  msgs = getMsgs();
 
-  for (const messageObj of messages) {
-    messageObj.message = messageObj.message.replace(/<[^>]*>|@\u2068(.*?)\u2069/g, '');
+  for (const  msgObj of  msgs) {
+     msgObj. msg =  msgObj. msg.replace(/<[^>]*>|@\u2068(.*?)\u2069/g, '');
   }
   const wordCounts: { [word: string]: number } = {};
 
-  for (const { message } of messages) {
-    const words = message.toLowerCase().split(/\s+/);
+  for (const {  msg } of  msgs) {
+    const words =  msg.toLowerCase().split(/\s+/);
     for (const word of words)
       if (word && !/^\d+$/.test(word) && word.length > 4)
         wordCounts[word] = (wordCounts[word] || 0) + 1;
   }
 
   const sortedWords = Object.entries(wordCounts).sort((a, b) => b[1] - a[1]);
-  return sortedWords.slice(0, 12);
+  return sortedWords.slice(0, dataSize);
 }
 
 export function getMostPingedUser(): [string, number][] {
-  const messages = getMessages();
+  const  msgs = getMsgs();
   const pingCounts: { [user: string]: number } = {};
 
-  for (const { message } of messages) {
-    const pings = message.match(/@\u2068(.*?)\u2069/g);
+  for (const {  msg } of  msgs) {
+    const pings =  msg.match(/@\u2068(.*?)\u2069/g);
     if (pings) {
       for (const ping of pings) {
         const user = getFirstName(ping.substring(2, ping.length - 1));
@@ -75,40 +77,91 @@ export function getMostPingedUser(): [string, number][] {
   }
 
   const sortedPings = Object.entries(pingCounts).sort((a, b) => b[1] - a[1]);
-  return sortedPings.slice(0, 12);
+  return sortedPings.slice(0, dataSize);
 }
 
 export function getMostActiveDays(): [string, number][] {
-  const messages = getMessages();
-  const dayMessageCounts: { [day: string]: number } = {};
+  const  msgs = getMsgs();
+  const dayMsgCounts: { [day: string]: number } = {};
 
-  for (const { date } of messages) {
+  for (const { date } of  msgs) {
     const day = date.split(',')[0];
-    dayMessageCounts[day] = (dayMessageCounts[day] || 0) + 1;
+    dayMsgCounts[day] = (dayMsgCounts[day] || 0) + 1;
   }
 
-  const sortedDays = Object.entries(dayMessageCounts).sort((a, b) => b[1] - a[1]);
+  const sortedDays = Object.entries(dayMsgCounts).sort((a, b) => b[1] - a[1]);
   return sortedDays.slice(0, 8);
 }
 
 export function getAvgMsgsPerHour(): number[] {
-  const messages = getMessages();
-  const hourMessageCounts: { [hour: string]: number } = {};
+  const  msgs = getMsgs();
+  const hourMsgCounts: { [hour: string]: number } = {};
   const daySet = new Set<string>();
 
-  for (const { date } of messages) {
+  for (const { date } of  msgs) {
     const [day, time] = date.split(', ');
     daySet.add(day);
     const hour = time.split(':')[0];
-    hourMessageCounts[hour] = (hourMessageCounts[hour] || 0) + 1;
+    hourMsgCounts[hour] = (hourMsgCounts[hour] || 0) + 1;
   }
 
   const numberOfDays = daySet.size;
   const avgMsgsPerHour = Array(24).fill(0);
 
-  for (const hour in hourMessageCounts) {
-    avgMsgsPerHour[parseInt(hour)] = hourMessageCounts[hour] / numberOfDays;
-  }
+  for (const hour in hourMsgCounts)
+    avgMsgsPerHour[parseInt(hour)] = hourMsgCounts[hour] / numberOfDays;
+  
 
   return avgMsgsPerHour;
+}
+
+export function getMostCommonEmojis(): [string, number][] {
+  const  msgs = getMsgs();
+  const emojiCounts: { [emoji: string]: number } = {};
+
+  for (const {  msg } of  msgs) {
+    const emojis =  msg.match(/(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu);
+    if (emojis)
+      for (const emoji of emojis)
+        emojiCounts[emoji] = (emojiCounts[emoji] || 0) + 1;
+  }
+
+  const sortedEmojis = Object.entries(emojiCounts).sort((a, b) => b[1] - a[1]);
+  return sortedEmojis.slice(0, dataSize-1);
+}
+
+export function getAvgWordsPerMsg(): number {
+  const  msgs = getMsgs();
+  let totalWords = 0;
+
+  for (const {  msg } of  msgs) {
+    const words =  msg.split(/\s+/);
+    totalWords += words.length;
+  }
+
+  return totalWords /  msgs.length;
+}
+
+export function getAvgWordsPerMsgPerUser(): [string, number][] {
+  const  msgs = getMsgs();
+  const userWordCounts: { [user: string]: { totalWords: number,  msgCount: number } } = {};
+
+  for (const { sender,  msg } of  msgs) {
+    const firstName = getFirstName(sender);
+    if (firstName) {
+      if (!userWordCounts[firstName])
+        userWordCounts[firstName] = { totalWords: 0,  msgCount: 0 };
+
+      const words =  msg.split(/\s+/);
+      userWordCounts[firstName].totalWords += words.length;
+      userWordCounts[firstName]. msgCount++;
+    }
+  }
+
+  const avgWordsPerUser: [string, number][] = [];
+  for (const user in userWordCounts)
+    avgWordsPerUser.push([user, userWordCounts[user].totalWords / userWordCounts[user]. msgCount]);
+
+
+  return avgWordsPerUser.sort((a, b) => b[1] - a[1]).slice(1, dataSize);
 }

@@ -20,7 +20,7 @@
               borderColor: '#F97068',
               backgroundColor: 'rgba(249, 112, 104, 0.2)',
               pointRadius: 0,
-              borderWidth: 3,
+              borderWidth: 2,
               fill: true
             },
           ],
