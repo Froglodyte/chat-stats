@@ -22,4 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-src/chat_logs/*
+
+# Ignore all files in src/chat_logs
+/src/chat_logs/**
