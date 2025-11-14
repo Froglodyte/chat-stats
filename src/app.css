@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Space+Grotesk:wght@300..700&display=swap');
+:root {
+  --primary-color: #D1D646;
+  --secondary-color: #F97068;
+  --white: #EDF2EF;
+  --black: #212738;
+  --font-family: 'Space Grotesk';
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--white);
+  color: var(--black);
+}
+
+.stat-card {
+  width: fit-content;
+  height: fit-content;
+  margin: 2rem auto;
+  padding: 2rem;
+  padding-bottom: 0;
+  color: var(--black);
+  box-shadow: 6px 6px 0 var(--black);
+  border: 2px solid var(--black);
+}
+
+#message-count {
+  background-color: var(--primary-color);
+}
+
+h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  text-align: center;
+  font-family: 'DotGothic16', monospace;
+}
+
+ol {
+  list-style-position: inside;
+  padding: 0;
+  width: 100%;
+  font-size: 1.2rem;
+}
+
+li {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0;
+}
+
+li > span {
+  font-weight: 500;
+  float: right;
+}
