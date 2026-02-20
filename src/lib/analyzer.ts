@@ -1,9 +1,10 @@
-import chatLogs from '../../src/chat_logs/fcs.txt?raw';
+//change the file path here
+import chatLogs from '../../src/chat_logs/wohitoh.txt?raw';
 
 const  msgRegex = /^(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}) - (.*?): (.*)/;
 const sysMsgRegex = /Msgs and calls are end-to-end encrypted|This message was deleted|created group|added|changed the group name|changed this group's icon|left|pinned a  msg|You're now an admin|This  msg was deleted|Missed voice call|Missed video call/;
 
-const dataSize = 12;
+const dataSize = 7;
 
 function getMsgs(): { date: string, sender: string,  msg: string }[] {
   const lines = chatLogs.split('\n');
@@ -12,6 +13,7 @@ function getMsgs(): { date: string, sender: string,  msg: string }[] {
   for (const line of lines) {
     const match = line.match( msgRegex);
     if (match && !sysMsgRegex.test(line)) {
+      if (match[2] === 'Meta AI') continue;
       let cleanedMsg = match[3].replace(/<[^>]*>/g, '');
       if (cleanedMsg.trim() === '') continue;
        msgs.push({ date: match[1], sender: match[2],  msg: cleanedMsg });
@@ -127,7 +129,7 @@ export function getMostCommonEmojis(): [string, number][] {
   }
 
   const sortedEmojis = Object.entries(emojiCounts).sort((a, b) => b[1] - a[1]);
-  return sortedEmojis.slice(0, dataSize-1);
+  return sortedEmojis.slice(0, dataSize);
 }
 
 export function getAvgWordsPerMsg(): number {
@@ -163,5 +165,21 @@ export function getAvgWordsPerMsgPerUser(): [string, number][] {
     avgWordsPerUser.push([user, userWordCounts[user].totalWords / userWordCounts[user]. msgCount]);
 
 
-  return avgWordsPerUser.sort((a, b) => b[1] - a[1]).slice(1, dataSize);
+  return avgWordsPerUser.sort((a, b) => b[1] - a[1]).slice(0, dataSize);
+}
+
+export function getTotalWordsPerUser(): [string, number][] {
+  const  msgs = getMsgs();
+  const userWordCounts: { [user: string]: number } = {};
+
+  for (const { sender,  msg } of  msgs) {
+    const firstName = getFirstName(sender);
+    if (firstName) {
+      const words =  msg.split(/\s+/);
+      userWordCounts[firstName] = (userWordCounts[firstName] || 0) + words.length;
+    }
+  }
+
+  const totalWordsPerUser = Object.entries(userWordCounts);
+  return totalWordsPerUser.sort((a, b) => b[1] - a[1]).slice(0, dataSize);
 }

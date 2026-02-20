@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { countMsgsPerUser, countTotalMsgs, getMostCommonWords, getMostPingedUser, getMostActiveDays, getAvgMsgsPerHour, getMostCommonEmojis, getAvgWordsPerMsg, getAvgWordsPerMsgPerUser } from './lib/analyzer';
+  import { countMsgsPerUser, countTotalMsgs, getMostCommonWords, getMostPingedUser, getMostActiveDays, getAvgMsgsPerHour, getMostCommonEmojis, getAvgWordsPerMsg, getAvgWordsPerMsgPerUser, getTotalWordsPerUser } from './lib/analyzer';
   import Chart from './lib/Chart.svelte';
 
   const totalMsgCount = countTotalMsgs();
@@ -11,11 +11,7 @@
   const mostCommonEmojis = getMostCommonEmojis();
   const avgWordsPerMsg = getAvgWordsPerMsg();
   const avgWordsPerMsgPerUser = getAvgWordsPerMsgPerUser();
-  const totalWordsPerUser = avgWordsPerMsgPerUser.map(([user, avg]) => {
-    const msgCount = Number(userMsgCounts.find(([u]) => u === user)?.[1] ?? 0);
-    return [user, (Number(avg) * msgCount).toFixed(0)];
-  }).sort((a, b) => Number(b[1]) - Number(a[1]));
-
+  const totalWordsPerUser = getTotalWordsPerUser();
 </script>
 
 <main>

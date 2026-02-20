@@ -65,7 +65,7 @@ main {
 }
 
 #avg-words-per-msg {
-  background-color: var(--color-a);
+  background-color: var(--color-b);
 }
 
 #avg-words-per-msg > h2 {
@@ -73,7 +73,7 @@ main {
 }
 
 #total-words-per-user {
-  background-color: var(--color-b);
+  background-color: var(--color-a);
 }
 
 h2 {
