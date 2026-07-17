@@ -23,5 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-# Ignore all files in src/chat_logs
-/src/chat_logs/**
+# Chat logs folder tracking is handled by src/chat_logs/.gitignore
