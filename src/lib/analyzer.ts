@@ -1,10 +1,21 @@
-//change the file path here
-import chatLogs from '../../src/chat_logs/extc.txt?raw';
+//=========== CHANGE THESE ========
+// Change the chat log file name here
+const fileName = 'change-me'; // without .txt extension
+
+// Display top n values of the analysis
+const dataSize = 10;
+//==================================
+
+const chatLogsModules = import.meta.glob('../chat_logs/*.txt', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+const chatLogs = chatLogsModules[`../chat_logs/${fileName}.txt`] || '';
 
 const msgRegex = /^(\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}) - (.*?): (.*)/;
 const sysMsgRegex = /Msgs and calls are end-to-end encrypted|This message was deleted|created group|added|changed the group name|changed this group's icon|left|pinned a msg|You're now an admin|This msg was deleted|Missed voice call|Missed video call/;
-
-const dataSize = 20;
 
 function getFirstName(sender: string): string | null {
   if (sender[0] == '+') return null;
