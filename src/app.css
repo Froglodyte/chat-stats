@@ -55,15 +55,6 @@ main {
   padding-block: 2rem;
 }
 
-#most-common-emojis {
-  background-color: var(--color-c);
-  min-width: 22ch!important;
-}
-
-#most-common-emojis > ol > li > strong {
-  text-shadow: 2px 2px 0 var(--black);
-}
-
 #avg-words-per-msg {
   background-color: var(--color-b);
 }
@@ -74,6 +65,10 @@ main {
 
 #total-words-per-user {
   background-color: var(--color-a);
+}
+
+#total-media-per-user {
+  background-color: var(--color-d);
 }
 
 h2 {

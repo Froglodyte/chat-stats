@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { countMsgsPerUser, countTotalMsgs, getMostCommonWords, getMostPingedUser, getMostActiveDays, getAvgMsgsPerHour, getMostCommonEmojis, getAvgWordsPerMsg, getAvgWordsPerMsgPerUser, getTotalWordsPerUser } from './lib/analyzer';
+  import { countMsgsPerUser, countTotalMsgs, getMostCommonWords, getMostPingedUser, getMostActiveDays, getAvgMsgsPerHour, getAvgWordsPerMsg, getAvgWordsPerMsgPerUser, getTotalWordsPerUser, getTotalMediaPerUser } from './lib/analyzer';
   import Chart from './lib/Chart.svelte';
 
   const totalMsgCount = countTotalMsgs();
@@ -8,10 +8,11 @@
   const mostPingedUsers = getMostPingedUser();
   const mostActiveDays = getMostActiveDays();
   const avgMsgsPerHour = getAvgMsgsPerHour();
-  const mostCommonEmojis = getMostCommonEmojis();
+
   const avgWordsPerMsg = getAvgWordsPerMsg();
   const avgWordsPerMsgPerUser = getAvgWordsPerMsgPerUser();
   const totalWordsPerUser = getTotalWordsPerUser();
+  const totalMediaPerUser = getTotalMediaPerUser();
 </script>
 
 <main>
@@ -76,11 +77,11 @@
 
   </div>
 
-  <div id="most-common-emojis" class="stat-card">
-    <h2>Most Common Emojis</h2>
+  <div id="total-media-per-user" class="stat-card">
+    <h2>Total Media per User</h2>
     <ol>
-      {#each mostCommonEmojis as [emoji, count]}
-        <li><strong>{emoji}</strong>: <span>{count}</span></li>
+      {#each totalMediaPerUser as [user, total]}
+        <li><strong>{user}</strong>: <span>{total}</span></li>
       {/each}
     </ol>
   </div>
